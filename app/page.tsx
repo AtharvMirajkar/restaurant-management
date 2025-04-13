@@ -1,35 +1,18 @@
 'use client';
 
+import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
-import { ChefHat, Coffee, UtensilsCrossed } from 'lucide-react';
+import { Coffee, UtensilsCrossed, ChefHat } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="fixed w-full top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <nav className="container flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <ChefHat className="h-8 w-8" />
-            <span className="font-bold text-xl">RestaurantOS</span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link href="/contact">
-              <Button variant="ghost">Contact</Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Link href="/auth/register">
-              <Button>Register Restaurant</Button>
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Header />
 
       <main className="pt-24">
-        <section className="container py-24 space-y-8">
+        <section className="container py-24 space-y-8 px-8 mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
