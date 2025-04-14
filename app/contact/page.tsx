@@ -11,23 +11,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ChefHat, Mail, MapPin, Phone } from 'lucide-react';
-import Link from 'next/link';
+import { Mail, MapPin, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Header } from '@/components/header';
 
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="fixed w-full top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <nav className="container flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <ChefHat className="h-8 w-8" />
-            <span className="font-bold text-xl">RestaurantOS</span>
-          </Link>
-        </nav>
-      </header>
+      <Header />
 
-      <main className="container pt-24 pb-16">
+      <main className="container pt-28 pb-16 px-8 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
