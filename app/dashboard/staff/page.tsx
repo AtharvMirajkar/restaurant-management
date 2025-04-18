@@ -36,7 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ChevronLeft, ChevronRight, Plus, UserPlus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, UserPlus } from 'lucide-react';
 
 // Sample staff data
 const initialStaff = [
@@ -61,13 +61,37 @@ const initialStaff = [
     role: 'Manager',
     joinDate: '2023-12-10',
   },
+  {
+    id: '4',
+    name: 'Sarah Wilson',
+    email: 'sarah@example.com',
+    role: 'Waiter',
+    joinDate: '2024-02-15',
+  },
+  {
+    id: '5',
+    name: 'David Brown',
+    email: 'david@example.com',
+    role: 'Chef',
+    joinDate: '2024-01-20',
+  },
 ];
 
 const roles = ['Manager', 'Chef', 'Waiter'];
 
+interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  joinDate: string;
+}
+
 export default function StaffPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [staff, setStaff] = useState(initialStaff);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
   const [newStaff, setNewStaff] = useState({
     name: '',
     email: '',
@@ -89,6 +113,16 @@ export default function StaffPage() {
       setDialogOpen(false);
     }
   };
+
+  const filteredStaff = staff.filter((member) => {
+    const matchesSearch =
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesRole = roleFilter === 'all' || member.role === roleFilter;
+
+    return matchesSearch && matchesRole;
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,26 +221,65 @@ export default function StaffPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Join Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {staff.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell className="font-medium">{member.name}</TableCell>
-                        <TableCell>{member.email}</TableCell>
-                        <TableCell>{member.role}</TableCell>
-                        <TableCell>{member.joinDate}</TableCell>
+                <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search staff..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                      <SelectValue placeholder="Filter by role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Roles</SelectItem>
+                      {roles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Join Date</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredStaff.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell className="font-medium">{member.name}</TableCell>
+                          <TableCell>{member.email}</TableCell>
+                          <TableCell>
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                member.role === 'Manager'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : member.role === 'Chef'
+                                  ? 'bg-orange-100 text-orange-800'
+                                  : 'bg-blue-100 text-blue-800'
+                              }`}
+                            >
+                              {member.role}
+                            </span>
+                          </TableCell>
+                          <TableCell>{member.joinDate}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </div>
