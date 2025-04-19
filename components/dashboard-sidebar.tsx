@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
 import {
   LayoutDashboard,
   Users,
@@ -11,8 +13,12 @@ import {
   ChefHat,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { rolePermissions, UserRole } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { logout } from '@/lib/features/authSlice';
 
-const navigation = [
+const baseNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Orders', href: '/dashboard/orders', icon: ClipboardList },
   { name: 'Menu', href: '/dashboard/menu', icon: UtensilsCrossed },
@@ -25,6 +31,20 @@ interface DashboardSidebarProps {
 }
 
 export function DashboardSidebar({ open }: DashboardSidebarProps) {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push('/auth/login');
+  };
+
+  const navigation = baseNavigation.filter(item => {
+    const route = item.href.split('/')[2] || 'dashboard';
+    return rolePermissions[user?.role as UserRole]?.includes(route);
+  });
+
   return (
     <div
       className={cn(
@@ -62,16 +82,16 @@ export function DashboardSidebar({ open }: DashboardSidebarProps) {
       </nav>
 
       <div className="absolute bottom-4 w-full px-2">
-        <Link
-          href="/auth/login"
+        <button
+          onClick={handleLogout}
           className={cn(
-            'flex items-center px-4 py-3 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-destructive',
+            'flex items-center w-full px-4 py-3 text-sm font-medium rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-destructive',
             !open && 'justify-center px-2'
           )}
         >
           <LogOut className="h-5 w-5 flex-shrink-0" />
           {open && <span className="ml-3">Logout</span>}
-        </Link>
+        </button>
       </div>
     </div>
   );

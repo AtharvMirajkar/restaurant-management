@@ -15,9 +15,16 @@ import { useState } from 'react';
 import { Header } from '@/components/header';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '@/lib/features/authSlice';
+import { findUserByEmail } from '@/lib/data/users';
+import { getDashboardRedirect } from '@/lib/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -25,8 +32,34 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, any login credentials will redirect to dashboard
-    router.push('/dashboard');
+    
+    const user = findUserByEmail(formData.email);
+    
+    if (user && user.password === formData.password) {
+      dispatch(setCredentials({
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          restaurantId: user.restaurantId,
+        },
+        token: 'dummy-jwt-token',
+      }));
+
+      toast({
+        title: 'Login successful',
+        description: `Welcome back, ${user.name}!`,
+      });
+
+      router.push(getDashboardRedirect(user.role));
+    } else {
+      toast({
+        title: 'Login failed',
+        description: 'Invalid email or password',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -104,6 +137,16 @@ export default function LoginPage() {
               </form>
             </CardContent>
           </Card>
+
+          <div className="mt-8 space-y-4">
+            <h3 className="text-lg font-semibold text-center">Demo Accounts</h3>
+            <div className="grid gap-2 text-sm text-muted-foreground">
+              <p>Owner: owner@restaurant.com / owner123</p>
+              <p>Manager: manager@restaurant.com / manager123</p>
+              <p>Chef: chef@restaurant.com / chef123</p>
+              <p>Waiter: waiter@restaurant.com / waiter123</p>
+            </div>
+          </div>
         </motion.div>
       </main>
     </div>
