@@ -2,7 +2,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password: string; // In production, this would be hashed
+  password?: string; // In production, this would be hashed
   role: 'owner' | 'manager' | 'chef' | 'waiter';
   restaurantId: string;
 }
