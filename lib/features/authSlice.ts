@@ -5,7 +5,7 @@ interface AuthState {
     id: string;
     name: string;
     email: string;
-    role: 'owner' | 'manager' | 'waiter' | 'cook' | null;
+    role: 'owner' | 'manager' | 'waiter' | 'chef' | null;
     restaurantId?: string;
   } | null;
   token: string | null;
