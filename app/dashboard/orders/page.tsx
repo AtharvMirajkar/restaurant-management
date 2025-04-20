@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import {
   Card,
@@ -26,8 +28,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Plus } from 'lucide-react';
 import { format, subDays, isWithinInterval, startOfDay, endOfDay, parseISO } from 'date-fns';
+import Link from 'next/link';
 
 // Sample data
 const initialOrders = [
@@ -40,7 +43,7 @@ const initialOrders = [
     ],
     total: 34.97,
     status: 'Completed',
-    waiter: 'John Smith',
+    waiter: 'Emily Brown',
     timestamp: '2024-03-10T14:30:00Z',
   },
   {
@@ -52,7 +55,7 @@ const initialOrders = [
     ],
     total: 28.97,
     status: 'In Progress',
-    waiter: 'Sarah Johnson',
+    waiter: 'Emily Brown',
     timestamp: '2024-03-11T15:45:00Z',
   },
   {
@@ -64,7 +67,7 @@ const initialOrders = [
     ],
     total: 55.96,
     status: 'Pending',
-    waiter: 'Mike Wilson',
+    waiter: 'Emily Brown',
     timestamp: '2024-03-11T18:20:00Z',
   },
 ];
@@ -105,6 +108,7 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const filterOrdersByDate = (order: Order, filter: string) => {
     const orderDate = parseISO(order.timestamp);
@@ -156,17 +160,32 @@ export default function OrdersPage() {
           <div className="p-8">
             <div className="flex items-center justify-between mb-8">
               <h1 className="text-3xl font-bold">Orders Management</h1>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                {sidebarOpen ? (
-                  <ChevronLeft className="h-6 w-6" />
-                ) : (
-                  <ChevronRight className="h-6 w-6" />
+              <div className="flex items-center space-x-4">
+                {user?.role === 'waiter' && (
+                  <Link href="/dashboard/orders/new">
+                    <Button>
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Order
+                    </Button>
+                  </Link>
                 )}
-              </Button>
+                {user?.role === 'chef' && (
+                  <Link href="/dashboard/orders/kitchen">
+                    <Button>Kitchen View</Button>
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                >
+                  {sidebarOpen ? (
+                    <ChevronLeft className="h-6 w-6" />
+                  ) : (
+                    <ChevronRight className="h-6 w-6" />
+                  )}
+                </Button>
+              </div>
             </div>
 
             <Card>
